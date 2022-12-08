@@ -62,7 +62,7 @@ There is no relationship between penguin **species** and penguin culmen **depth*
 Observations are independent, each subject belongs to one species only.
 
 2\.
-Distribution of data is approximately normally distributed.
+Distribution of residuals is approximately normally distributed.
 
 3\.
 The variance for the three species are approximately equal.
