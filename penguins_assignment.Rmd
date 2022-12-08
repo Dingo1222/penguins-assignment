@@ -1,0 +1,140 @@
+---
+title: "Penguins assignment"
+output: html_document
+date: '2022-12-05'
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Question 04
+
+### Preparing packages and raw data
+
+Packages:
+
+```{r packages, message=FALSE, warning=FALSE, }
+source("functions/packages.r")
+```
+
+Raw data:
+
+```{r penguins_raw, }
+write.csv(penguins_raw, "data_raw/penguins_raw.csv")
+penguins_raw <- read.csv("data_raw/penguins_raw.csv")
+knitr::kable(head(penguins_raw))
+```
+
+Clean data:
+
+```{r penguins_clean, }
+source("functions/cleaning.r")
+penguins_clean <- cleaning(penguins_raw)
+write.csv(penguins_clean, "data_clean/penguins_clean.csv")
+knitr::kable(head(penguins_clean))
+```
+
+### Analysis of covariance (ANCOVA)
+
+**Question:** Is the relationship between penguin culmen **length** -(response)- and culmen **depth** -(covariate)- significantly different between different **speciess**?
+
+**Null Hypotheses (H~0~):**
+
+1\.
+The means between the species are not significantly different from each other.
+
+2\.
+The slopes of the regression lines between culmen **length** and culmen **depth** are not significantly different to 0.
+
+3a.
+There is no relationship between penguin **species** and penguin culmen **length**.
+
+3b.
+There is no relationship between penguin **species** and penguin culmen **depth**.
+
+**Assumptions:**
+
+1\.
+Observations are independent, each subject belongs to one species only.
+
+2\.
+Distribution of data is approximately normally distributed.
+
+3\.
+The variance for the three species are approximately equal.
+
+4\.
+There are no significant outliers.
+
+```{r qqplot}
+model <- lm(culmen_length_mm ~ species * culmen_depth_mm, penguins_clean)
+plot(model, which=2)
+```
+
+Although there are a some outliers on either end of the Q-Q plot.
+The points all fall approximately along the reference line, thus the data does not provide strong enough evidence that the data violates the approximate normality assumption.
+
+Histogram:
+
+```{r histogram}
+culmen_histogram <- ggplot(penguins_clean, aes(y = culmen_length_mm, fill = species)) + geom_histogram(alpha=0.5, bins=20) + coord_flip() + labs(x= "Count", y = "Culmen length (mm)") + scale_fill_discrete(name="Species", labels=c("Adelie", 
+"Chinstrap", "Gentoo"))
+
+culmen_histogram +
+  scale_color_manual(values=c("#15B9CB","#E58D09","#9B3CD1")) +
+  scale_fill_manual(values=c("#15B9CB","#E58D09","#9B3CD1"), labels=c("Adelie", "Chinstrap", "Gentoo"))
+
+```
+
+```{r outliers}
+penguins_clean %>%
+  group_by(species) %>%
+  identify_outliers(culmen_length_mm)
+```
+
+There is only one extreme outlier so the overall result will not be substantially affected.
+
+```{r}
+plot(model, which = 1)
+```
+
+While there are some outliers, there is almost no deviation from the reference line.
+There is no significant relationship between residuals and fitted values, thus there is no evidence that strongly suggests the homogeneity of variances assumption has been violated.
+
+```{r anova}
+res.aov <- aov(culmen_length_mm ~ species, data = penguins_clean)
+res.aov
+summary(res.aov)
+```
+
+The F-value obtained is 410.6, which is significantly larger than 1.
+Thus, there is significant evidence to believe that the variation among species means is not likely due to chance.
+
+### Data Visualisation:
+
+```{r plot, , include=TRUE}
+source("functions/plot.r")
+PenguinANCOVA <- plot_figure(penguins_clean)
+PenguinANCOVA
+```
+
+Saving data visualisation:
+
+```{r save}
+source("functions/plot.r")
+#save as.png
+save_culmenplot_png(penguins_clean, "figures/Fig01.png", 
+                      width=20, height=17, res=600, scaling=1)
+
+save_culmenplot_png(penguins_clean, "figures/Fig02_powerpoint.png", 
+                      width=20, height=17, res=600, scaling=2)
+
+#save as .svg
+save_culmenplot_svg(penguins_clean, "figures/Fig01.svg", width=20, height=17, scaling=2.3)
+
+save_culmenplot_svg(penguins_clean, "figures/Fig02_powerpointposter.svg", width=20, height=17, scaling=4.2)
+```
