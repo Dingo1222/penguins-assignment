@@ -13,7 +13,11 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ## Question 04
 
-### Preparing packages and raw data
+```{r setwd}
+setwd("penguins_assignment-main")
+```
+
+### Preparing packages and data
 
 Packages:
 
@@ -40,7 +44,7 @@ knitr::kable(head(penguins_clean))
 
 ### Analysis of covariance (ANCOVA)
 
-**Question:** Is the relationship between penguin culmen **length** -(response)- and culmen **depth** -(covariate)- significantly different between different **speciess**?
+**Question:** Is the relationship between penguin culmen **length** -(response)- and culmen **depth** -(covariate)- significantly different between different **species**?
 
 **Null Hypotheses (H~0~):**
 
@@ -62,7 +66,7 @@ There is no relationship between penguin **species** and penguin culmen **depth*
 Observations are independent, each subject belongs to one species only.
 
 2\.
-Distribution of residuals is approximately normally distributed.
+Distribution of data is approximately normally distributed.
 
 3\.
 The variance for the three species are approximately equal.
@@ -78,7 +82,7 @@ plot(model, which=2)
 Although there are a some outliers on either end of the Q-Q plot.
 The points all fall approximately along the reference line, thus the data does not provide strong enough evidence that the data violates the approximate normality assumption.
 
-Histogram:
+#### Histogram:
 
 ```{r histogram}
 culmen_histogram <- ggplot(penguins_clean, aes(y = culmen_length_mm, fill = species)) + geom_histogram(alpha=0.5, bins=20) + coord_flip() + labs(x= "Count", y = "Culmen length (mm)") + scale_fill_discrete(name="Species", labels=c("Adelie", 
@@ -122,7 +126,7 @@ PenguinANCOVA <- plot_figure(penguins_clean)
 PenguinANCOVA
 ```
 
-Saving data visualisation:
+#### Saving data visualisation:
 
 ```{r save}
 source("functions/plot.r")
