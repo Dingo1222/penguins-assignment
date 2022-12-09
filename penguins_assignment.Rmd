@@ -79,7 +79,7 @@ model <- lm(culmen_length_mm ~ species * culmen_depth_mm, penguins_clean)
 plot(model, which=2)
 ```
 
-Although there are a some outliers on either end of the Q-Q plot.
+Although there are some outliers on either end of the Q-Q plot.
 The points all fall approximately along the reference line, thus the data does not provide strong enough evidence that the data violates the approximate normality assumption.
 
 #### Histogram:
